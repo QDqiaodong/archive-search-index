@@ -1,0 +1,16 @@
+[build-system]
+requires = ["setuptools==80.9.0", "wheel==0.45.1"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "archive-search-index"
+version = "0.1.0"
+description = "Offline paragraph search with verifiable document citations"
+requires-python = ">=3.11"
+dependencies = []
+
+[project.scripts]
+archive-search = "archive_index.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]

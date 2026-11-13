@@ -1,0 +1,8 @@
+{
+  "schema_version": 1,
+  "documents": [
+    {"id": "A1", "title": "Harbor restoration notes", "collection": "engineering", "path": "harbor.txt"},
+    {"id": "A2", "title": "Archive reading guide", "collection": "library", "path": "guide.txt"},
+    {"id": "A3", "title": "Pump repair log", "collection": "engineering", "path": "pump.txt"}
+  ]
+}
