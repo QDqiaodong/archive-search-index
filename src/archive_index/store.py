@@ -1,4 +1,11 @@
-"""Publish a standalone SQLite search snapshot after complete validation."""
+"""Publish a standalone SQLite search snapshot after complete validation.
+
+Validation and publication are fused into one streaming pass: each document
+is captured, checked and inserted immediately, so memory stays bounded by
+the largest document rather than by the whole corpus.  The snapshot is still
+all-or-nothing: any failure happens before the target is replaced, leaving a
+previous database untouched and removing the temporary database file.
+"""
 import hashlib
 import os
 from pathlib import Path
@@ -26,21 +33,27 @@ def build(manifest, database):
     target = Path(database).absolute()
     if target.is_symlink():
         raise ValueError('database target cannot be a symlink')
-    if target.resolve() == Path(manifest).resolve():
+    manifest_path = Path(manifest).resolve()
+    if target.resolve() == manifest_path:
         raise ValueError('database would overwrite manifest')
-    for doc in docs:
-        if target.resolve() == (Path(manifest).resolve().parent / doc['path']).resolve():
+    root = manifest_path.parent
+    for entry in docs.entries:
+        if target.resolve() == (root / entry['path']).resolve():
             raise ValueError('database would overwrite an input document')
     target.parent.mkdir(parents=True, exist_ok=True)
     fd, name = tempfile.mkstemp(prefix='.archive-index-', suffix='.sqlite', dir=target.parent)
     os.close(fd)
     temporary = Path(name)
+    connection = None
     try:
-        with sqlite3.connect(temporary) as connection:
+        connection = sqlite3.connect(temporary)
+        with connection:
             connection.executescript(SCHEMA)
             connection.execute('INSERT INTO metadata VALUES (?,?)', (hashlib.sha256(raw).hexdigest(), raw))
             count = 0
+            documents = 0
             for doc in docs:
+                documents += 1
                 connection.execute('INSERT INTO documents VALUES (?,?,?,?,?,?)',
                     (doc['id'],doc['title'],doc['collection'],doc['path'],doc['sha256'],doc['raw']))
                 for number, (start,end,body) in enumerate(doc['chunks'],1):
@@ -54,10 +67,11 @@ def build(manifest, database):
                 raise ValueError('internal citation foreign key failure')
         # sqlite3's context manager commits but does not close its connection.
         connection.close()
+        connection = None
         temporary.replace(target)
-        return {'documents': len(docs), 'paragraphs': count,
+        return {'documents': documents, 'paragraphs': count,
                 'manifest_sha256': hashlib.sha256(raw).hexdigest()}
     finally:
-        if 'connection' in locals():
+        if connection is not None:
             connection.close()
         temporary.unlink(missing_ok=True)

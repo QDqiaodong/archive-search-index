@@ -12,10 +12,13 @@ paths must be unique; different documents may contain identical text.
 Paths are relative to the manifest directory. Absolute paths, `..`, and symlinks
 in the document path are rejected. Files must be regular UTF-8 text; NUL and
 blank-only documents are rejected. Maximum manifest size is 1 MiB, document
-size 2 MiB, combined document size 20 MiB. Each input is read once; its SHA256,
-parsing and retained raw BLOB use the same captured bytes. This is a trusted,
-static local corpus contract, not a sandbox for hostile concurrent filesystem
-changes. The manifest must not itself be a symlink.
+size 2 MiB, combined document size 1 GiB across at most 1000 documents. Each
+input is read once, on demand: its SHA256, parsing, paragraph citations and
+retained raw BLOB all derive from that single captured byte string. Document
+bodies are never cached ahead of the current document, so build memory grows
+with the largest document rather than with total corpus size. This is a
+trusted, static local corpus contract, not a sandbox for hostile concurrent
+filesystem changes. The manifest must not itself be a symlink.
 
 ## Paragraphs and retrieval
 
@@ -50,11 +53,13 @@ FTS5 table keyed by the matching chunk rowid. Stable ID ordering makes rowids
 independent of manifest entry ordering. No deduplication of identical content
 across distinct IDs is implied.
 
-Build validates the whole corpus, writes a temporary SQLite file beside the
-target, commits, checks FTS index/foreign keys, closes the database, then replaces
-the target. Failures before replacement preserve the previous database and
-clean temporary files on normal exception paths. Existing input files and the
-manifest cannot be selected as the output, and symlink targets are rejected.
+Build validates manifest metadata first, then captures, validates and inserts
+each document in one streaming pass inside a temporary SQLite file beside the
+target. It commits, checks FTS index/foreign keys, closes the database, then
+replaces the target. A limit breach or a bad document encountered mid-pass
+fails the whole build before replacement: the previous database is preserved
+and the temporary file is cleaned. Existing input files and the manifest
+cannot be selected as the output, and symlink targets are rejected.
 Abrupt machine termination can leave a temporary file; no crash-recovery
 daemon or power-loss durability guarantee is provided.
 
