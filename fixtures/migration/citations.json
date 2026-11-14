@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "citations": [
+    {"document_id": "M1", "sha256": "7c95c9a5f52f8c1eabf46f151a590f012b833d292505f9b41c71193a8bab4ec2", "paragraph": 2, "start_line": 3, "end_line": 3},
+    {"document_id": "M2", "sha256": "556db7b5891681f6943f2f60322ab9016b28c5898b5f0b1e1eab5165387ca301", "paragraph": 1, "start_line": 1, "end_line": 1},
+    {"document_id": "M3", "sha256": "bc31d383b5388452e4de6c5a1cb3e0f8ff2c5acadb85e2c1645f9420b642f0a2", "paragraph": 1, "start_line": 1, "end_line": 1},
+    {"document_id": "M3", "sha256": "bc31d383b5388452e4de6c5a1cb3e0f8ff2c5acadb85e2c1645f9420b642f0a2", "paragraph": 3, "start_line": 5, "end_line": 5},
+    {"document_id": "M4", "sha256": "baa052ab5a23ff9df9fc69aaa121cad488caaae872946d205e07232ef9d3b515", "paragraph": 1, "start_line": 1, "end_line": 1}
+  ]
+}

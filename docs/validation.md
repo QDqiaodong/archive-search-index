@@ -25,3 +25,32 @@ not tracked. No Linux container execution is claimed. A read-only resource
 lookup found a matching prepared dependency image, but this baseline validation
 did not start that image. Python 3.11 is the declared minimum, not an additional
 runtime tested in this run.
+
+# Citation migration validation — 2026-11-14
+
+Executed in a Linux container (no network) on the declared minimum runtime:
+
+- Python 3.11.2; SQLite 3.40.1 with FTS5 verified by table creation.
+- `python3 -m venv --without-pip .venv` (this image lacks ensurepip/pip, so the
+  package was exercised as `PYTHONPATH=$PWD/src .venv/bin/python ...` instead of
+  an installed wheel; no third-party code was involved).
+- `PYTHONPATH=$PWD/src .venv/bin/python -m unittest discover -s tests`:
+  28 tests, exit 0 — the 12 baseline tests unchanged plus 16 migration tests.
+- Real CLI builds of `fixtures/migration/old` and `fixtures/migration/new`
+  (4 documents / 9 paragraphs each), then
+  `migrate --old run/old.sqlite --new run/new.sqlite --citations
+  fixtures/migration/citations.json --report run/report.json` exited 0 with
+  summary `{"ambiguous": 1, "citations": 5, "migrated": 3, "unmatched": 0,
+  "vanished": 1}`; a second run produced byte-identical report JSON.
+
+Migration tests cover: exhaustive all-optimal-matching checks of the dynamic
+programming characterization against an independent brute-force enumerator
+(every binary sequence pair up to length 5, 300 seeded random ternary pairs up
+to length 7), inserted/deleted paragraphs, duplicate-paragraph ambiguity with
+and without possible unmatch, cross-document identical text never aligning,
+CRLF originals, deterministic self-contained reports re-verified after deleting
+all inputs, bad citations/bad libraries failing the whole run while preserving
+a previous report, report never overwriting inputs or symlinks, injected
+write-replacement failure preserving the old report and cleaning temporaries,
+and an end-to-end CLI run of the synthetic fixture (including exit 2 on a
+report path equal to an input database).

@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "documents": [
+    {"id": "M1", "title": "Migration inserted paragraph", "collection": "engineering", "path": "m1.txt"},
+    {"id": "M2", "title": "Migration vanished document", "collection": "library", "path": "m2.txt"},
+    {"id": "M3", "title": "Migration duplicate paragraphs", "collection": "engineering", "path": "m3.txt"},
+    {"id": "M4", "title": "Migration stable document", "collection": "library", "path": "m4.txt"}
+  ]
+}
