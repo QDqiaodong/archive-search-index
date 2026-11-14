@@ -4,6 +4,7 @@ import sqlite3
 from .store import build
 from .query import search
 from .migrate import STATUSES, migrate, write_report
+from .contrast import compare, write_report as write_contrast_report
 
 
 def main():
@@ -22,12 +23,25 @@ def main():
     m.add_argument('--new',required=True)
     m.add_argument('--citations',required=True)
     m.add_argument('--report',required=True)
+    c = commands.add_parser('contrast')
+    c.add_argument('--database',required=True)
+    c.add_argument('--collection-a',required=True)
+    c.add_argument('--collection-b',required=True)
+    c.add_argument('--limit',type=int,default=100)
+    c.add_argument('--report',required=True)
     args = parser.parse_args()
     try:
         if args.command == 'build':
             result = build(args.manifest,args.database)
         elif args.command == 'search':
             result = {'matches':search(args.database,args.query,args.collection,args.limit)}
+        elif args.command == 'contrast':
+            report = compare(args.database,args.collection_a,args.collection_b,args.limit)
+            write_contrast_report(report,args.report,inputs=(args.database,))
+            result = {'report':args.report,
+                      'documents':{side:report['collections'][side]['documents']
+                                   for side in ('a','b')},
+                      'terms':len(report['terms'])}
         else:
             report = migrate(args.old,args.new,args.citations)
             write_report(report,args.report,inputs=(args.old,args.new,args.citations))

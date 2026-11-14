@@ -73,6 +73,27 @@ PYTHONPATH=$PWD/src python3 tools/acceptance.py
 1条歧义（M3重复段丢一份）、1条失效（M2文档消失；新库M5虽有逐字相同文本，
 跨文档从不对齐）。详见[迁移契约](docs/migration.md)。
 
+## 馆藏选词：集合用语对照
+
+`contrast`比较同一快照中两个集合的正文词项，用于选词。只统计现有FTS5索引的
+`body`列，标题既不贡献词项也不贡献出现次数；词频、含词文档数直接由SQLite在
+索引上聚合，大小写、重音与中文边界完全沿用建库分词器，不在Python里重新拆词。
+每个词按`((DF_A+1)/(N_A+2))/((DF_B+1)/(N_B+2))`降序排名，同值按词项Unicode
+顺序；比值用整数交叉相乘精确比较并以约分后的分子/分母输出，不做浮点排序。
+报告含两集文档数与每个词的两侧TF/DF，只读单事务快照，不读原文件，词项实例
+不进入Python内存；失败或写出失败保旧报告，绝不覆盖源库。
+
+```sh
+.venv/bin/archive-search build --manifest fixtures/contrast/manifest.json --database run/contrast.sqlite
+.venv/bin/archive-search contrast --database run/contrast.sqlite \
+  --collection-a alpha --collection-b beta --limit 100 --report run/contrast-report.json
+```
+
+合成样例含跨段重复、同文异ID、仅标题出现的词、重音合并（Café/CAFÉ）、
+比分并列与中文单词；`fixtures/contrast/expected.json`是人工核对的完整报告，
+实跑记录见[集合用语对照验证](docs/contrast-validation.md)。
+详见[集合用语对照契约](docs/contrast.md)。
+
 ## 模块
 
 - `ingest.py`：受限本地输入捕获、严格清单校验与段落行号；清单元数据先完整校验，
@@ -80,6 +101,7 @@ PYTHONPATH=$PWD/src python3 tools/acceptance.py
 - `store.py`：流式逐文档捕获/校验/入库，FTS5物化与完整快照原子发布。
 - `query.py`：只读短语/布尔检索、排名和集合过滤。
 - `migrate.py`：只读快照核验、全最优匹配刻画与确定性迁移报告。
+- `contrast.py`：只读单快照的集合正文词项对照、精确有理数排名与确定性报告。
 - `fixtures/`：MIT许可的自制虚构档案，不包含真实客户材料。
 - `tests/`：数据结果、跨进程CLI、错误输入与替换失败测试。
 

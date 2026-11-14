@@ -1,0 +1,121 @@
+{
+ "collections": {
+  "a": {
+   "documents": 3,
+   "name": "alpha"
+  },
+  "b": {
+   "documents": 2,
+   "name": "beta"
+  }
+ },
+ "limit": 100,
+ "schema_version": 1,
+ "terms": [
+  {
+   "a": {
+    "df": 2,
+    "tf": 2
+   },
+   "b": {
+    "df": 0,
+    "tf": 0
+   },
+   "ratio": {
+    "denominator": 5,
+    "numerator": 12
+   },
+   "term": "ledger"
+  },
+  {
+   "a": {
+    "df": 1,
+    "tf": 2
+   },
+   "b": {
+    "df": 0,
+    "tf": 0
+   },
+   "ratio": {
+    "denominator": 5,
+    "numerator": 8
+   },
+   "term": "archive"
+  },
+  {
+   "a": {
+    "df": 3,
+    "tf": 3
+   },
+   "b": {
+    "df": 1,
+    "tf": 1
+   },
+   "ratio": {
+    "denominator": 5,
+    "numerator": 8
+   },
+   "term": "cafe"
+  },
+  {
+   "a": {
+    "df": 2,
+    "tf": 2
+   },
+   "b": {
+    "df": 1,
+    "tf": 1
+   },
+   "ratio": {
+    "denominator": 5,
+    "numerator": 6
+   },
+   "term": "gate"
+  },
+  {
+   "a": {
+    "df": 2,
+    "tf": 6
+   },
+   "b": {
+    "df": 1,
+    "tf": 1
+   },
+   "ratio": {
+    "denominator": 5,
+    "numerator": 6
+   },
+   "term": "harbor"
+  },
+  {
+   "a": {
+    "df": 1,
+    "tf": 1
+   },
+   "b": {
+    "df": 1,
+    "tf": 1
+   },
+   "ratio": {
+    "denominator": 5,
+    "numerator": 4
+   },
+   "term": "冬季维护"
+  },
+  {
+   "a": {
+    "df": 0,
+    "tf": 0
+   },
+   "b": {
+    "df": 2,
+    "tf": 4
+   },
+   "ratio": {
+    "denominator": 15,
+    "numerator": 4
+   },
+   "term": "tide"
+  }
+ ]
+}

@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "documents": [
+    {"id": "C1", "title": "Zephyr Harbor", "collection": "alpha", "path": "c1.txt"},
+    {"id": "C2", "title": "Zephyr Harbor", "collection": "alpha", "path": "c2.txt"},
+    {"id": "C3", "title": "Kestrel Log", "collection": "alpha", "path": "c3.txt"},
+    {"id": "C4", "title": "Zephyr Harbor", "collection": "beta", "path": "c4.txt"},
+    {"id": "C5", "title": "Kestrel Log", "collection": "beta", "path": "c5.txt"}
+  ]
+}
