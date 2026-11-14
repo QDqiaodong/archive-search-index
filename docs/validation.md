@@ -54,3 +54,26 @@ a previous report, report never overwriting inputs or symlinks, injected
 write-replacement failure preserving the old report and cleaning temporaries,
 and an end-to-end CLI run of the synthetic fixture (including exit 2 on a
 report path equal to an input database).
+
+# Property and mutation validation — 2026-11-14
+
+Executed in this Linux container (no network), Python 3.11.2 / SQLite 3.40.1:
+
+- `PYTHONPATH=$PWD/src python3 -m unittest discover -s tests`:
+  48 tests, exit 0 — the 28 baseline/migration tests unchanged plus
+  10 property tests and 10 mutation-runner self-tests.
+- `PYTHONPATH=$PWD/src python3 tools/acceptance.py`: exit 0. Full suite
+  green, baseline mutant copy green, 5/5 injected defects killed by new
+  regression assertions, working-tree source digest unchanged. Report at
+  `run/acceptance-report.json`.
+- Corpus samples: 3 seeds, 21 document instances, 54 paragraph instances,
+  193 reference queries (159 with hits, 448 expected hits).
+- One manual check with an injected tie-order defect produced bundles under
+  `run/property-failures`; each `replay.sh` re-failed the case, and the same
+  bundles passed against unmodified source. Those exploratory bundles were
+  removed; the suite writes them only on failure.
+
+The isolation runner refuses to score import/collection errors, timeouts and
+unrelated assertion failures as kills (asserted by
+`tests/test_mutation_runner.py` and confirmed directly against a synthetic
+`ImportError` mutant, an unrelated-method mutant and a zero-timeout run).

@@ -37,6 +37,21 @@ library集合中的restoration查询只命中A2第1段。顺序由SQLite BM25排
 重复全量构建与查询得到相同逻辑结果；不承诺SQLite文件字节完全相同。
 `python -m archive_index.cli`与安装的命令行入口等价。
 
+## 可重放性质回归与变异验收
+
+在仓库根目录执行一条离线命令：
+
+```sh
+PYTHONPATH=$PWD/src python3 tools/acceptance.py
+```
+
+该命令先跑完整测试套件，再用逐项隔离的变异运行器注入五种可运行缺陷并判定
+新增回归断言能否杀死；源码不被修改，证据写入`run/acceptance-report.json`。
+性质语料由固定种子生成（重复正文、仅标题命中、空行与CRLF、多集合），
+段落/行号/摘要及AND/OR/NOT参考求值均独立从原始字节推导，不调用被测解析或
+查询函数。失败会保存语料、查询、种子与单例重放命令；实际CLI亦被覆盖。
+详见[性质与变异验收](docs/property-acceptance.md)。
+
 ## 引用迁移
 
 档案改版后旧行号不能直接沿用。`migrate`在只读单快照下核验新旧两库
